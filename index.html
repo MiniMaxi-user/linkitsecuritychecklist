@@ -3,71 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root{
+  --color-linkit-blue:#3973ee;
+  --color-sky-blue:#83cff5;
+  --color-teal:#00c9d2;
+  --color-electric-green:#00ff9f;
+  --color-midnight-purple:#2a2538;
+  --color-black:#000;
+  --color-white:#fff;
+  /* surfaces */
+  --bg:#f4f6fb;
+  --surface:#fff;
+  --border:#e3e7f0;
+  --border-strong:#c7d0e4;
+  --text:var(--color-midnight-purple);
+  --text-muted:#6b6878;
+  --text-faint:#9a97a6;
+  /* risk semantics */
+  --low-bg:#e6fff5;--low-border:#00c9d2;--low-text:#05746b;
+  --med-bg:#fff4e0;--med-border:#e0921a;--med-text:#8a560a;
+  --high-bg:#ffe9ea;--high-border:#e03b46;--high-text:#9c1b22;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;background:#fff;padding:24px;display:flex;flex-direction:column;align-items:center}
-.inner{width:50%;min-width:320px}
-h1{font-size:20px;font-weight:500;margin-bottom:4px;color:#1a1a1a}
-.intro{color:#666;font-size:14px;margin-bottom:20px}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;color:var(--text);background:var(--bg);padding:0 24px 48px;display:flex;flex-direction:column;align-items:center}
+.inner{width:55%;min-width:320px;max-width:880px}
 
-.wizard{border:1px solid #e0e0e0;border-radius:12px;background:#f9f9f7;padding:20px;margin-bottom:20px}
+.topbar{width:100%;display:flex;justify-content:center;background:var(--color-white);border-bottom:3px solid var(--color-linkit-blue);margin:0 -24px 28px;padding:18px 24px;box-shadow:0 1px 6px rgba(42,37,56,.06)}
+.topbar-inner{width:55%;min-width:320px;max-width:880px;display:flex;align-items:center}
+.brand-logo{height:30px;width:auto;display:block}
+
+h1{font-size:24px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;color:var(--color-midnight-purple)}
+h1 .accent{color:var(--color-linkit-blue)}
+.intro{color:var(--text-muted);font-size:14px;margin-bottom:24px}
+
+.wizard{border:1px solid var(--border);border-radius:16px;background:var(--surface);padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(42,37,56,.06),0 8px 24px rgba(42,37,56,.05)}
 .wizard-step{display:none}.wizard-step.active{display:block}
-.step-indicator{font-size:12px;color:#999;margin-bottom:6px}
-.step-q{font-weight:500;font-size:15px;margin-bottom:14px;color:#1a1a1a}
+.step-indicator{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--color-linkit-blue);margin-bottom:8px}
+.step-q{font-weight:600;font-size:17px;margin-bottom:16px;color:var(--color-midnight-purple)}
 .answer-list{display:flex;flex-direction:column;gap:8px}
-.answer-btn{text-align:left;padding:10px 14px;border-radius:8px;border:1.5px solid #d0d0d0;background:#fff;cursor:pointer;font-size:14px;color:#1a1a1a;transition:all .12s}
-.answer-btn:hover{border-color:#999;background:#f5f5f5}
-.answer-btn.sel-low{border-color:#0F6E56;background:#E1F5EE;color:#085041}
-.answer-btn.sel-medium{border-color:#BA7517;background:#854F0B;color:#fff}
-.answer-btn.sel-high{border-color:#A32D2D;background:#FCEBEB;color:#501313}
-.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
-.btn{padding:7px 16px;border-radius:8px;border:1px solid #d0d0d0;background:#fff;cursor:pointer;font-size:13px;color:#1a1a1a}
-.btn:hover{border-color:#999}
-.btn-primary{background:#1a1a1a;color:#fff;border-color:transparent}
-.btn-primary:hover{background:#333}
-.btn:disabled{opacity:.35;cursor:default}
-.progress-dots{display:flex;gap:6px}
-.dot{width:7px;height:7px;border-radius:50%;background:#d0d0d0}
-.dot.done{background:#0F6E56}.dot.active{background:#666}
+.answer-btn{text-align:left;padding:12px 15px;border-radius:10px;border:1.5px solid var(--border-strong);background:var(--surface);cursor:pointer;font-size:14px;font-family:inherit;color:var(--text);transition:all .14s}
+.answer-btn:hover{border-color:var(--color-linkit-blue);background:#f5f8ff}
+.answer-btn.sel-low{border-color:var(--low-border);background:var(--low-bg);color:var(--low-text);font-weight:500}
+.answer-btn.sel-medium{border-color:var(--med-border);background:var(--med-bg);color:var(--med-text);font-weight:500}
+.answer-btn.sel-high{border-color:var(--high-border);background:var(--high-bg);color:var(--high-text);font-weight:500}
+.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.btn{padding:9px 18px;border-radius:10px;border:1.5px solid var(--border-strong);background:var(--surface);cursor:pointer;font-size:13px;font-weight:500;font-family:inherit;color:var(--text);transition:all .14s}
+.btn:hover{border-color:var(--color-linkit-blue);color:var(--color-linkit-blue)}
+.btn-primary{background:var(--color-linkit-blue);color:#fff;border-color:transparent}
+.btn-primary:hover{background:#2a5fd6;color:#fff}
+.btn:disabled{opacity:.35;cursor:default;border-color:var(--border-strong);color:var(--text)}
+.progress-dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border-strong);transition:all .14s}
+.dot.done{background:var(--color-teal)}.dot.active{background:var(--color-linkit-blue);transform:scale(1.25)}
 
-.result-banner{border-radius:12px;padding:16px 18px;margin-bottom:20px;display:none}
+.result-banner{border-radius:16px;padding:18px 20px;margin-bottom:24px;display:none}
 .result-banner.visible{display:flex;gap:14px;align-items:flex-start}
-.result-banner.low{border:1.5px solid #0F6E56;background:#E1F5EE;color:#085041}
-.result-banner.medium{border:1.5px solid #BA7517;background:#854F0B;color:#fff}
-.result-banner.high{border:1.5px solid #A32D2D;background:#FCEBEB;color:#501313}
-.result-icon{font-size:22px;flex-shrink:0;margin-top:1px}
-.result-label{font-weight:500;font-size:15px}
+.result-banner.low{border:1.5px solid var(--low-border);background:var(--low-bg);color:var(--low-text)}
+.result-banner.medium{border:1.5px solid var(--med-border);background:var(--med-bg);color:var(--med-text)}
+.result-banner.high{border:1.5px solid var(--high-border);background:var(--high-bg);color:var(--high-text)}
+.result-icon{font-size:24px;flex-shrink:0;margin-top:1px}
+.result-label{font-weight:700;font-size:16px}
 .result-desc{font-size:13px;margin-top:3px}
-.result-change{font-size:12px;margin-top:8px;cursor:pointer;text-decoration:underline;opacity:.7}
+.result-change{font-size:12px;font-weight:600;margin-top:10px;cursor:pointer;text-decoration:underline;opacity:.75}
 .result-change:hover{opacity:1}
-.answer-summary{margin-top:10px;display:flex;flex-direction:column;gap:3px}
+.answer-summary{margin-top:12px;display:flex;flex-direction:column;gap:3px}
 .answer-summary-item{font-size:12px;display:flex;gap:6px}
 .answer-summary-item span:first-child{opacity:.7;white-space:nowrap}
 
-.phases{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
-@media(max-width:600px){.phases{grid-template-columns:1fr}}
-.phase-card{border-radius:12px;border:1px solid #e0e0e0;background:#fff;overflow:hidden}
-.phase-header{padding:12px 16px 10px;display:flex;align-items:center;gap:8px}
-.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.phase-title{font-weight:500;font-size:15px;color:#1a1a1a}
-.phase-sub{font-size:12px;color:#666}
-.controls-section{padding:0 16px 14px;border-top:1px solid #e0e0e0}
-.section-label{font-size:12px;color:#999;margin:10px 0 6px}
-.control-item{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.phases{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px}
+@media(max-width:600px){.phases{grid-template-columns:1fr}.inner,.topbar-inner{width:100%}}
+.phase-card{border-radius:16px;border:1px solid var(--border);background:var(--surface);overflow:hidden;box-shadow:0 1px 3px rgba(42,37,56,.05)}
+.phase-header{padding:14px 18px 12px;display:flex;align-items:center;gap:10px;border-top:3px solid var(--phase-color,var(--color-linkit-blue))}
+.phase-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.phase-title{font-weight:700;font-size:16px;color:var(--color-midnight-purple)}
+.phase-sub{font-size:12px;color:var(--text-muted)}
+.controls-section{padding:0 18px 16px;border-top:1px solid var(--border)}
+.section-label{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--text-faint);margin:14px 0 6px}
+.control-item{display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0f2f7}
 .control-item:last-child{border-bottom:none}
-.badge{font-size:11px;font-weight:500;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:2px;flex-shrink:0}
-.badge-low{background:#E1F5EE;color:#085041}
-.badge-med{background:#854F0B;color:#fff}
-.badge-high{background:#FCEBEB;color:#501313}
-.control-text{font-size:13px;line-height:1.5;color:#1a1a1a}
-.control-text strong{font-weight:500}
-.empty-state{text-align:center;padding:40px;color:#aaa;font-size:14px}
+.badge{font-size:10px;font-weight:600;padding:3px 7px;border-radius:6px;white-space:nowrap;margin-top:2px;flex-shrink:0;letter-spacing:.02em}
+.badge-low{background:var(--low-bg);color:var(--low-text)}
+.badge-med{background:var(--med-bg);color:var(--med-text)}
+.badge-high{background:var(--high-bg);color:var(--high-text)}
+.control-text{font-size:13px;line-height:1.5;color:var(--text)}
+.control-text strong{font-weight:600;color:var(--color-midnight-purple)}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text-faint);font-size:14px;background:var(--surface);border:1px dashed var(--border-strong);border-radius:16px}
 </style>
 </head>
 <body>
 
+<div class="topbar">
+  <div class="topbar-inner">
+    <img class="brand-logo" src="https://www.linkit.nl/app/uploads/2024/04/2026-linkit-logo-rgb-full-colour.png" alt="LINKIT">
+  </div>
+</div>
+
 <div class="inner">
-<h1>Informatiebeveiliging in het 4D-model</h1>
+<h1>Informatiebeveiliging in het <span class="accent">4D-model</span></h1>
 <p class="intro">Beantwoord 5 vragen om het risicoprofiel van je project te bepalen. De beveiligingsmaatregelen worden automatisch gefilterd.</p>
 
 <div class="wizard" id="wizard"></div>
@@ -112,7 +148,7 @@ const profiles={
   high:{icon:"🔴",label:"Hoog risico",desc:"Publieke sector, finance, bijzondere persoonsgegevens of zware regelgeving. Volledige beveiligingsinrichting vereist."}
 };
 const phases=[
-  {title:"Discover",color:"#0F6E56",sub:"Vereisten & risico's in kaart brengen",controls:[
+  {title:"Discover",color:"#3973ee",sub:"Vereisten & risico's in kaart brengen",controls:[
     {risk:"low",text:"<strong>Stakeholder engagement</strong> — betrek legal, compliance en security (CISO, Privacy Officer) bij het ophalen van vereisten."},
     {risk:"low",text:"<strong>CAI-classificatie</strong> — stel het vereiste niveau van Confidentialiteit, Integriteit en Beschikbaarheid vast met stakeholders."},
     {risk:"low",text:"<strong>Risico-inventarisatie</strong> — identificeer dreigingen, kwetsbaarheden en bedrijfsimpact (BIA)."},
@@ -122,7 +158,7 @@ const phases=[
     {risk:"medium",text:"<strong>Data-classificatiestrategie</strong> — definieer categorieën en beschermingsniveaus op basis van gevoeligheid."},
     {risk:"high",text:"<strong>Third-party risicobeheer</strong> — identificeer en beoordeel afhankelijkheden van leveranciers, API's en open-source componenten."},
     {risk:"high",text:"<strong>Beveiligingsbudget</strong> — zorg voor dekking van tools, trainingen en assessments."}]},
-  {title:"Design",color:"#185FA5",sub:"Beveiligingsarchitectuur uitwerken",controls:[
+  {title:"Design",color:"#00c9d2",sub:"Beveiligingsarchitectuur uitwerken",controls:[
     {risk:"low",text:"<strong>Secure architecture</strong> — pas least privilege, need-to-know en zero trust toe als standaard ontwerpprincipes."},
     {risk:"low",text:"<strong>Toegangsbeheer</strong> — definieer rollen, rechten en authenticatiemechanismen (OAuth, SSO, MFA, RBAC)."},
     {risk:"low",text:"<strong>Privacy by design</strong> — verwerk dataminimalisatie, toestemming en rechten van betrokkenen in het ontwerp."},
@@ -134,14 +170,14 @@ const phases=[
     {risk:"high",text:"<strong>Netwerksegmentatie & firewall/IDS/IPS</strong> — ontwerp geïsoleerde omgevingen en definieer monitoring controls."},
     {risk:"high",text:"<strong>Cloud security controls</strong> — maak gebruik van cloud-native beveiligingsfuncties (IAM, security groups, logging)."},
     {risk:"high",text:"<strong>Hoge beschikbaarheid</strong> — ontwerp voor fouttolerantie en failover."}]},
-  {title:"Develop",color:"#854F0B",sub:"Veilig bouwen & configureren",controls:[
+  {title:"Develop",color:"#83cff5",sub:"Veilig bouwen & configureren",controls:[
     {risk:"low",text:"<strong>Secure coding</strong> — volg OWASP-richtlijnen en gebruik statische code-analysetools."},
     {risk:"low",text:"<strong>Configuratiebeheer</strong> — verharden systemen, deactiveer ongebruikte poorten en services."},
     {risk:"medium",text:"<strong>Beveiligingstests</strong> — voer penetratietests, dynamische analyse en vulnerability assessments uit."},
     {risk:"medium",text:"<strong>Incidentrespons voorbereiding</strong> — stel een incidentresponsplan op en test dit vóór go-live."},
     {risk:"high",text:"<strong>Externe code review</strong> — laat de codebase beoordelen door een onafhankelijke derde partij."},
     {risk:"high",text:"<strong>Secrets management</strong> — gebruik een vault of beveiligde opslag voor credentials, API-sleutels en certificaten."}]},
-  {title:"Drive",color:"#993556",sub:"Bewaken, beheren & verbeteren",controls:[
+  {title:"Drive",color:"#2a2538",sub:"Bewaken, beheren & verbeteren",controls:[
     {risk:"low",text:"<strong>Patchbeheer</strong> — update software en systemen regelmatig om kwetsbaarheden te verhelpen."},
     {risk:"low",text:"<strong>Toegangsreviews</strong> — audit periodiek gebruikersrechten en -toegang."},
     {risk:"low",text:"<strong>Incidentrespons executie</strong> — zorg dat het team klaar is om incidenten te detecteren, op te lossen en te herstellen."},
@@ -210,7 +246,7 @@ function renderPhases(risk){
   phases.forEach(phase=>{
     const grouped={low:[],medium:[],high:[]};
     phase.controls.forEach(c=>{if(riskOrder[c.risk]<=maxRisk)grouped[c.risk].push(c);});
-    html+=`<div class="phase-card"><div class="phase-header"><div class="phase-dot" style="background:${phase.color}"></div><div><div class="phase-title">${phase.title}</div><div class="phase-sub">${phase.sub}</div></div></div><div class="controls-section">`;
+    html+=`<div class="phase-card"><div class="phase-header" style="--phase-color:${phase.color}"><div class="phase-dot" style="background:${phase.color}"></div><div><div class="phase-title">${phase.title}</div><div class="phase-sub">${phase.sub}</div></div></div><div class="controls-section">`;
     ['low','medium','high'].forEach(r=>{
       if(!grouped[r].length||riskOrder[r]>maxRisk)return;
       html+=`<div class="section-label">${sectionLabels[r]}</div>`;
