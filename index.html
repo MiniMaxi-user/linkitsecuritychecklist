@@ -92,9 +92,35 @@ h1 .accent{color:var(--color-linkit-blue)}
 .control-text{font-size:13px;line-height:1.5;color:var(--text)}
 .control-text strong{font-weight:600;color:var(--color-midnight-purple)}
 .empty-state{text-align:center;padding:48px 24px;color:var(--text-faint);font-size:14px;background:var(--surface);border:1px dashed var(--border-strong);border-radius:16px}
+
+.login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,var(--color-midnight-purple),#1c1826)}
+.login-card{width:100%;max-width:380px;background:var(--surface);border-radius:18px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center}
+.login-logo{height:32px;width:auto;margin:0 auto 22px;display:block}
+.login-title{font-size:18px;font-weight:700;color:var(--color-midnight-purple);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text-muted);margin-bottom:22px}
+.login-form{display:flex;flex-direction:column;gap:12px}
+.login-input{width:100%;padding:12px 14px;border:1.5px solid var(--border-strong);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);transition:border-color .14s}
+.login-input:focus{outline:none;border-color:var(--color-linkit-blue)}
+.login-btn{padding:12px;border-radius:10px;border:none;background:var(--color-linkit-blue);color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .14s}
+.login-btn:hover{background:#2a5fd6}
+.login-error{font-size:12px;color:var(--high-text);min-height:16px;font-weight:500}
+.login-overlay.hidden{display:none}
 </style>
 </head>
 <body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <img class="login-logo" src="https://www.linkit.nl/app/uploads/2024/04/2026-linkit-logo-rgb-full-colour.png" alt="LINKIT">
+    <div class="login-title">Beveiligde toegang</div>
+    <div class="login-sub">Voer het wachtwoord in om de checklist te openen.</div>
+    <form class="login-form" id="login-form" autocomplete="off">
+      <input class="login-input" type="password" id="login-input" placeholder="Wachtwoord" autofocus>
+      <button class="login-btn" type="submit">Inloggen</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+  </div>
+</div>
 
 <div class="topbar">
   <div class="topbar-inner">
@@ -120,6 +146,20 @@ h1 .accent{color:var(--color-linkit-blue)}
 </div>
 
 <script>
+const ACCESS_PASSWORD="Linkit4D";
+document.getElementById('login-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  const val=document.getElementById('login-input').value;
+  const err=document.getElementById('login-error');
+  if(val===ACCESS_PASSWORD){
+    document.getElementById('login-overlay').classList.add('hidden');
+  }else{
+    err.textContent='Onjuist wachtwoord. Probeer opnieuw.';
+    document.getElementById('login-input').value='';
+    document.getElementById('login-input').focus();
+  }
+});
+
 const questions=[
   {q:"Welke data verwerkt het project?",answers:[
     {label:"Alleen interne, niet-gevoelige bedrijfsdata",risk:"low"},
@@ -138,7 +178,7 @@ const questions=[
     {label:"AVG / GDPR",risk:"medium"},
     {label:"DORA, NIS2, NEN7510, BIO of sectorspecifieke regelgeving",risk:"high"}]},
   {q:"In welke sector opereert de opdrachtgever?",answers:[
-    {label:"Intern (LINKIT zelf) of laag-regulatoire sector",risk:"low"},
+    {label:"Intern of laag-regulatoire sector",risk:"low"},
     {label:"Manufacturing, retail, logistiek of zakelijke dienstverlening",risk:"medium"},
     {label:"Overheid, publieke sector of finance & insurance",risk:"high"}]}
 ];
