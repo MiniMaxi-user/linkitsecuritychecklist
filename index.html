@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;background:#fff;padding:24px;display:flex;flex-direction:column;align-items:center}
+.inner{width:50%;min-width:320px}
+h1{font-size:20px;font-weight:500;margin-bottom:4px;color:#1a1a1a}
+.intro{color:#666;font-size:14px;margin-bottom:20px}
+
+.wizard{border:1px solid #e0e0e0;border-radius:12px;background:#f9f9f7;padding:20px;margin-bottom:20px}
+.wizard-step{display:none}.wizard-step.active{display:block}
+.step-indicator{font-size:12px;color:#999;margin-bottom:6px}
+.step-q{font-weight:500;font-size:15px;margin-bottom:14px;color:#1a1a1a}
+.answer-list{display:flex;flex-direction:column;gap:8px}
+.answer-btn{text-align:left;padding:10px 14px;border-radius:8px;border:1.5px solid #d0d0d0;background:#fff;cursor:pointer;font-size:14px;color:#1a1a1a;transition:all .12s}
+.answer-btn:hover{border-color:#999;background:#f5f5f5}
+.answer-btn.sel-low{border-color:#0F6E56;background:#E1F5EE;color:#085041}
+.answer-btn.sel-medium{border-color:#BA7517;background:#854F0B;color:#fff}
+.answer-btn.sel-high{border-color:#A32D2D;background:#FCEBEB;color:#501313}
+.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.btn{padding:7px 16px;border-radius:8px;border:1px solid #d0d0d0;background:#fff;cursor:pointer;font-size:13px;color:#1a1a1a}
+.btn:hover{border-color:#999}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:transparent}
+.btn-primary:hover{background:#333}
+.btn:disabled{opacity:.35;cursor:default}
+.progress-dots{display:flex;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#d0d0d0}
+.dot.done{background:#0F6E56}.dot.active{background:#666}
+
+.result-banner{border-radius:12px;padding:16px 18px;margin-bottom:20px;display:none}
+.result-banner.visible{display:flex;gap:14px;align-items:flex-start}
+.result-banner.low{border:1.5px solid #0F6E56;background:#E1F5EE;color:#085041}
+.result-banner.medium{border:1.5px solid #BA7517;background:#854F0B;color:#fff}
+.result-banner.high{border:1.5px solid #A32D2D;background:#FCEBEB;color:#501313}
+.result-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.result-label{font-weight:500;font-size:15px}
+.result-desc{font-size:13px;margin-top:3px}
+.result-change{font-size:12px;margin-top:8px;cursor:pointer;text-decoration:underline;opacity:.7}
+.result-change:hover{opacity:1}
+.answer-summary{margin-top:10px;display:flex;flex-direction:column;gap:3px}
+.answer-summary-item{font-size:12px;display:flex;gap:6px}
+.answer-summary-item span:first-child{opacity:.7;white-space:nowrap}
+
+.phases{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+@media(max-width:600px){.phases{grid-template-columns:1fr}}
+.phase-card{border-radius:12px;border:1px solid #e0e0e0;background:#fff;overflow:hidden}
+.phase-header{padding:12px 16px 10px;display:flex;align-items:center;gap:8px}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.phase-title{font-weight:500;font-size:15px;color:#1a1a1a}
+.phase-sub{font-size:12px;color:#666}
+.controls-section{padding:0 16px 14px;border-top:1px solid #e0e0e0}
+.section-label{font-size:12px;color:#999;margin:10px 0 6px}
+.control-item{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.control-item:last-child{border-bottom:none}
+.badge{font-size:11px;font-weight:500;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:2px;flex-shrink:0}
+.badge-low{background:#E1F5EE;color:#085041}
+.badge-med{background:#854F0B;color:#fff}
+.badge-high{background:#FCEBEB;color:#501313}
+.control-text{font-size:13px;line-height:1.5;color:#1a1a1a}
+.control-text strong{font-weight:500}
+.empty-state{text-align:center;padding:40px;color:#aaa;font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="inner">
+<h1>Informatiebeveiliging in het 4D-model</h1>
+<p class="intro">Beantwoord 5 vragen om het risicoprofiel van je project te bepalen. De beveiligingsmaatregelen worden automatisch gefilterd.</p>
+
+<div class="wizard" id="wizard"></div>
+<div class="result-banner" id="result-banner">
+  <div class="result-icon" id="result-icon"></div>
+  <div>
+    <div class="result-label" id="result-label"></div>
+    <div class="result-desc" id="result-desc"></div>
+    <div class="answer-summary" id="answer-summary"></div>
+    <div class="result-change" onclick="resetWizard()">↩ Opnieuw bepalen</div>
+  </div>
+</div>
+<div id="phases-container"><div class="empty-state">Beantwoord de vragen hierboven om de maatregelen te zien.</div></div>
+</div>
+
+<script>
+const questions=[
+  {q:"Welke data verwerkt het project?",answers:[
+    {label:"Alleen interne, niet-gevoelige bedrijfsdata",risk:"low"},
+    {label:"Persoonsgegevens of klantdata (AVG van toepassing)",risk:"medium"},
+    {label:"Bijzondere persoonsgegevens, financiële of medische data",risk:"high"}]},
+  {q:"Wie gebruikt het systeem?",answers:[
+    {label:"Alleen interne medewerkers",risk:"low"},
+    {label:"Externe gebruikers of klanten",risk:"medium"},
+    {label:"Burgers, patiënten of grote groepen externe gebruikers",risk:"high"}]},
+  {q:"Wat is de impact als het systeem uitvalt of gehackt wordt?",answers:[
+    {label:"Beperkt — werkproces vertraagt, geen externe schade",risk:"low"},
+    {label:"Significant — klanten of partners ondervinden hinder",risk:"medium"},
+    {label:"Kritiek — reputatieschade, boetes of veiligheidsrisico's",risk:"high"}]},
+  {q:"Welke wet- en regelgeving is van toepassing?",answers:[
+    {label:"Geen specifieke vereisten",risk:"low"},
+    {label:"AVG / GDPR",risk:"medium"},
+    {label:"DORA, NIS2, NEN7510, BIO of sectorspecifieke regelgeving",risk:"high"}]},
+  {q:"In welke sector opereert de opdrachtgever?",answers:[
+    {label:"Intern (LINKIT zelf) of laag-regulatoire sector",risk:"low"},
+    {label:"Manufacturing, retail, logistiek of zakelijke dienstverlening",risk:"medium"},
+    {label:"Overheid, publieke sector of finance & insurance",risk:"high"}]}
+];
+const profiles={
+  low:{icon:"🟢",label:"Laag risico",desc:"Interne applicaties, niet-gevoelige data, beperkte gebruikersgroep. Basisbeveiliging is voldoende."},
+  medium:{icon:"🟡",label:"Middel risico",desc:"Klantgerichte applicaties met persoonsgegevens of bedrijfskritische processen. Structurele maatregelen vereist."},
+  high:{icon:"🔴",label:"Hoog risico",desc:"Publieke sector, finance, bijzondere persoonsgegevens of zware regelgeving. Volledige beveiligingsinrichting vereist."}
+};
+const phases=[
+  {title:"Discover",color:"#0F6E56",sub:"Vereisten & risico's in kaart brengen",controls:[
+    {risk:"low",text:"<strong>Stakeholder engagement</strong> — betrek legal, compliance en security (CISO, Privacy Officer) bij het ophalen van vereisten."},
+    {risk:"low",text:"<strong>CAI-classificatie</strong> — stel het vereiste niveau van Confidentialiteit, Integriteit en Beschikbaarheid vast met stakeholders."},
+    {risk:"low",text:"<strong>Risico-inventarisatie</strong> — identificeer dreigingen, kwetsbaarheden en bedrijfsimpact (BIA)."},
+    {risk:"low",text:"<strong>Beveiligingsdoelstellingen</strong> — stem beveiligingsdoelen af op de projectscope en businessdoelstellingen."},
+    {risk:"medium",text:"<strong>Compliancy mapping</strong> — breng toepasselijke wet- en regelgeving in kaart (AVG, DORA, NIS2, NEN7510)."},
+    {risk:"medium",text:"<strong>Security governance framework</strong> — selecteer een passend kader (ISO27001, NIST, BIO, COBIT)."},
+    {risk:"medium",text:"<strong>Data-classificatiestrategie</strong> — definieer categorieën en beschermingsniveaus op basis van gevoeligheid."},
+    {risk:"high",text:"<strong>Third-party risicobeheer</strong> — identificeer en beoordeel afhankelijkheden van leveranciers, API's en open-source componenten."},
+    {risk:"high",text:"<strong>Beveiligingsbudget</strong> — zorg voor dekking van tools, trainingen en assessments."}]},
+  {title:"Design",color:"#185FA5",sub:"Beveiligingsarchitectuur uitwerken",controls:[
+    {risk:"low",text:"<strong>Secure architecture</strong> — pas least privilege, need-to-know en zero trust toe als standaard ontwerpprincipes."},
+    {risk:"low",text:"<strong>Toegangsbeheer</strong> — definieer rollen, rechten en authenticatiemechanismen (OAuth, SSO, MFA, RBAC)."},
+    {risk:"low",text:"<strong>Privacy by design</strong> — verwerk dataminimalisatie, toestemming en rechten van betrokkenen in het ontwerp."},
+    {risk:"low",text:"<strong>Backup & herstel</strong> — ontwerp een getest back-up- en disaster recovery-plan."},
+    {risk:"medium",text:"<strong>Secure SDLC</strong> — kies een ontwikkelmethodiek met geïntegreerde beveiliging (bijv. DevSecOps)."},
+    {risk:"medium",text:"<strong>Encryptiestrategie</strong> — definieer encryptie voor data in rust, transit en gebruik."},
+    {risk:"medium",text:"<strong>Beveiligingstestplan</strong> — plan code reviews, penetratietests en vulnerability scans in."},
+    {risk:"high",text:"<strong>Threat modeling</strong> — breng aanvalsvectoren en dreigingsactoren in kaart op basis van CAI-classificatie."},
+    {risk:"high",text:"<strong>Netwerksegmentatie & firewall/IDS/IPS</strong> — ontwerp geïsoleerde omgevingen en definieer monitoring controls."},
+    {risk:"high",text:"<strong>Cloud security controls</strong> — maak gebruik van cloud-native beveiligingsfuncties (IAM, security groups, logging)."},
+    {risk:"high",text:"<strong>Hoge beschikbaarheid</strong> — ontwerp voor fouttolerantie en failover."}]},
+  {title:"Develop",color:"#854F0B",sub:"Veilig bouwen & configureren",controls:[
+    {risk:"low",text:"<strong>Secure coding</strong> — volg OWASP-richtlijnen en gebruik statische code-analysetools."},
+    {risk:"low",text:"<strong>Configuratiebeheer</strong> — verharden systemen, deactiveer ongebruikte poorten en services."},
+    {risk:"medium",text:"<strong>Beveiligingstests</strong> — voer penetratietests, dynamische analyse en vulnerability assessments uit."},
+    {risk:"medium",text:"<strong>Incidentrespons voorbereiding</strong> — stel een incidentresponsplan op en test dit vóór go-live."},
+    {risk:"high",text:"<strong>Externe code review</strong> — laat de codebase beoordelen door een onafhankelijke derde partij."},
+    {risk:"high",text:"<strong>Secrets management</strong> — gebruik een vault of beveiligde opslag voor credentials, API-sleutels en certificaten."}]},
+  {title:"Drive",color:"#993556",sub:"Bewaken, beheren & verbeteren",controls:[
+    {risk:"low",text:"<strong>Patchbeheer</strong> — update software en systemen regelmatig om kwetsbaarheden te verhelpen."},
+    {risk:"low",text:"<strong>Toegangsreviews</strong> — audit periodiek gebruikersrechten en -toegang."},
+    {risk:"low",text:"<strong>Incidentrespons executie</strong> — zorg dat het team klaar is om incidenten te detecteren, op te lossen en te herstellen."},
+    {risk:"low",text:"<strong>Wijzigingsbeheer</strong> — beoordeel en test elke wijziging op beveiligingsimpact."},
+    {risk:"medium",text:"<strong>Security awareness training</strong> — train gebruikers en beheerders op phishing, social engineering en veilig werken."},
+    {risk:"high",text:"<strong>Continu monitoring (SIEM)</strong> — detecteer afwijkingen en dreigingen in realtime."},
+    {risk:"high",text:"<strong>Audit & compliancy checks</strong> — voer regelmatige audits uit om te voldoen aan beleid en regelgeving."}]}
+];
+
+const riskOrder={low:0,medium:1,high:2};
+const badgeLabel={low:"Laag",medium:"Middel",high:"Hoog"};
+const badgeClass={low:"badge-low",medium:"badge-med",high:"badge-high"};
+const selClass={low:"sel-low",medium:"sel-medium",high:"sel-high"};
+const sectionLabels={low:"Basis — altijd van toepassing",medium:"Aanvullend — middel & hoog risico",high:"Uitgebreid — alleen hoog risico"};
+
+let currentStep=0, answers=Array(questions.length).fill(null);
+
+function renderWizard(){
+  const w=document.getElementById('wizard');
+  const q=questions[currentStep];
+  const sel=answers[currentStep];
+  const dots=questions.map((_,i)=>`<div class="dot${i<currentStep?' done':i===currentStep?' active':''}"></div>`).join('');
+  const answersHtml=q.answers.map((a,i)=>`<button class="answer-btn${sel&&sel.risk===a.risk?' '+selClass[a.risk]:''}" onclick="selectAnswer(${i})">${a.label}</button>`).join('');
+  const isLast=currentStep===questions.length-1;
+  w.innerHTML=`
+    <div class="step-indicator">Vraag ${currentStep+1} van ${questions.length}</div>
+    <div class="step-q">${q.q}</div>
+    <div class="answer-list">${answersHtml}</div>
+    <div class="wizard-nav">
+      <button class="btn" onclick="prevStep()" ${currentStep===0?'disabled':''}>← Vorige</button>
+      <div class="progress-dots">${dots}</div>
+      <button class="btn btn-primary" onclick="${isLast?'finishWizard()':'nextStep()'}" ${sel?'':'disabled'}>${isLast?'Bepaal profiel →':'Volgende →'}</button>
+    </div>`;
+}
+
+function selectAnswer(i){answers[currentStep]=questions[currentStep].answers[i];renderWizard();}
+function nextStep(){if(answers[currentStep]&&currentStep<questions.length-1){currentStep++;renderWizard();}}
+function prevStep(){if(currentStep>0){currentStep--;renderWizard();}}
+
+function finishWizard(){
+  const rc={low:0,medium:0,high:0};
+  answers.forEach(a=>{if(a)rc[a.risk]++;});
+  const finalRisk=rc.high>0?'high':rc.medium>0?'medium':'low';
+  document.getElementById('wizard').style.display='none';
+  const p=profiles[finalRisk];
+  const banner=document.getElementById('result-banner');
+  banner.className=`result-banner visible ${finalRisk}`;
+  document.getElementById('result-icon').textContent=p.icon;
+  document.getElementById('result-label').textContent=p.label;
+  document.getElementById('result-desc').textContent=p.desc;
+  document.getElementById('answer-summary').innerHTML=questions.map((q,i)=>`<div class="answer-summary-item"><span>${q.q.split(' ').slice(0,3).join(' ')}…</span><span>${answers[i]?answers[i].label:'—'}</span></div>`).join('');
+  renderPhases(finalRisk);
+}
+
+function resetWizard(){
+  currentStep=0;answers=Array(questions.length).fill(null);
+  document.getElementById('wizard').style.display='block';
+  document.getElementById('result-banner').className='result-banner';
+  document.getElementById('phases-container').innerHTML='<div class="empty-state">Beantwoord de vragen hierboven om de maatregelen te zien.</div>';
+  renderWizard();
+}
+
+function renderPhases(risk){
+  const maxRisk=riskOrder[risk];
+  let html='<div class="phases">';
+  phases.forEach(phase=>{
+    const grouped={low:[],medium:[],high:[]};
+    phase.controls.forEach(c=>{if(riskOrder[c.risk]<=maxRisk)grouped[c.risk].push(c);});
+    html+=`<div class="phase-card"><div class="phase-header"><div class="phase-dot" style="background:${phase.color}"></div><div><div class="phase-title">${phase.title}</div><div class="phase-sub">${phase.sub}</div></div></div><div class="controls-section">`;
+    ['low','medium','high'].forEach(r=>{
+      if(!grouped[r].length||riskOrder[r]>maxRisk)return;
+      html+=`<div class="section-label">${sectionLabels[r]}</div>`;
+      grouped[r].forEach(c=>{html+=`<div class="control-item"><div class="badge ${badgeClass[r]}">${badgeLabel[r]}</div><div class="control-text">${c.text}</div></div>`;});
+    });
+    html+=`</div></div>`;
+  });
+  html+='</div>';
+  document.getElementById('phases-container').innerHTML=html;
+}
+
+renderWizard();
+</script>
+</body>
+</html>
